@@ -2,6 +2,7 @@
   <!-- Title -->
     <text x="450" y="30" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="16" font-weight="700" opacity="0.6">AdaL sits where all three converge</text>
   <text x="450" y="52" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="13" font-weight="600" opacity="0.8">the bottleneck is cost and human judgement</text>
+  <text x="450" y="70" text-anchor="middle" fill="#666" font-family="system-ui" font-size="11" opacity="0.7">by Li Yin</text>
 
   <!-- Three pillars -->
   <!-- Cost-effective -->
