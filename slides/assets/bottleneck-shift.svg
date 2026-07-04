@@ -14,7 +14,7 @@
   <circle cx="450" cy="130" r="60" fill="none" stroke="#FF5898" stroke-width="2" opacity="0.8"/>
   <text x="450" y="125" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">More</text>
   <text x="450" y="148" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">Cost-Effective</text>
-  <text x="450" y="210" text-anchor="middle" fill="#888" font-family="system-ui" font-size="12">smart model routing</text>
+  <text x="450" y="210" text-anchor="middle" fill="#888" font-family="system-ui" font-size="12">model agnostic &amp; performant</text>
   <text x="450" y="228" text-anchor="middle" fill="#555" font-family="system-ui" font-size="11">no tier-1 token burning</text>
 
   <!-- Taste -->
