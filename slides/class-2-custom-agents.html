@@ -134,21 +134,19 @@
   <section class="slide dark">
     <span class="tag">Agent's Brain</span>
     <h1 style="color:#fff">Custom System Prompt</h1>
-    <div class="two-col" style="margin-top:0.5em">
+    <p style="color:#ccc;text-align:center;max-width:42em">By default, AdaL is a <span class="accent">coding agent</span>. Two ways to give it your own persona:</p>
+    <div class="two-col" style="margin-top:0.8em">
       <div>
-        <h3 style="color:#FF5898">AGENTS.md (recommended)</h3>
+        <h3 style="color:#FF5898">AGENTS.md</h3>
         <p style="color:#ccc;font-size:0.95em">Auto-loaded every turn from workspace root. Shared team context committed to the repo.</p>
       </div>
       <div>
         <h3 style="color:#FF5898">--prompt-file</h3>
-        <p style="color:#ccc;font-size:0.95em">Replaces default role prompt entirely. Per-script persona overrides.</p>
+        <p style="color:#ccc;font-size:0.95em">Replaces the default role prompt entirely. Per-script persona overrides.</p>
       </div>
     </div>
     <div class="terminal" style="margin-top:1em">
-      <div class="line"><span class="comment"># Generate with /init</span></div>
-      <div class="line"><span class="prompt">&gt;</span> <span class="cmd">/init</span></div>
-      <div class="line">&nbsp;</div>
-      <div class="line"><span class="comment"># Or use a custom persona</span></div>
+      <div class="line"><span class="comment"># Use a custom persona</span></div>
       <div class="line"><span class="prompt">$</span> <span class="cmd">adal --prompt-file prompts/security-auditor.md</span></div>
     </div>
     <p class="muted" style="margin-top:0.5em"><a href="https://docs.sylph.ai/features/custom-system-prompt" style="color:#FF5898">→ docs.sylph.ai/features/custom-system-prompt</a></p>

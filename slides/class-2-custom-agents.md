@@ -42,24 +42,17 @@ You define what the agent knows and what it can do. AdaL handles the rest.
 
 ## Slide 4: Custom System Prompt
 
-Two approaches — can be combined:
+By default, AdaL is a **coding agent**. Two ways to give it your own persona:
 
-| Method | How it works | Best for |
-|--------|-------------|----------|
-| `AGENTS.md` | Auto-loaded every turn from workspace root | Shared team context |
-| `--prompt-file` | Replaces default role prompt entirely | Per-script persona overrides |
+| Method | How it works |
+|--------|-------------|
+| `AGENTS.md` | Auto-loaded every turn from workspace root. Shared team context committed to the repo. |
+| `--prompt-file` | Replaces the default role prompt entirely. Per-script persona overrides. |
 
-Example `AGENTS.md`:
+```bash
+# Use a custom persona
+adal --prompt-file prompts/security-auditor.md
 ```
-# Project Instructions
-## Stack
-- Python 3.12, FastAPI, PostgreSQL
-## Conventions
-- snake_case for Python, camelCase for TypeScript
-- Never commit .env files
-```
-
-Generate one with `/init` in the CLI.
 
 Link: [docs.sylph.ai/features/custom-system-prompt](https://docs.sylph.ai/features/custom-system-prompt)
 
