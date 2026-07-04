@@ -184,7 +184,7 @@ asyncio.run(main())
 
 ## Slide 10: Build Your Own — The Flow
 
-1. **Define persona** → write `AGENTS.md` or `--prompt-file`
+1. **Define persona** → `AGENTS.md` + `--prompt-file`
 2. **Choose tools** → `--remove-tools` / `--allowed-tools` to select a subset
 3. **Add custom tools** → `.adal/tools.py` with `CUSTOM_TOOLS`
 4. **Create agent on Cloud** → name + prompt + tools
