@@ -3,19 +3,19 @@
   <text x="450" y="30" text-anchor="middle" fill="#fff" font-family="system-ui" font-size="16" font-weight="700" opacity="0.6">AdaL sits where all three converge</text>
 
   <!-- Three pillars -->
-  <!-- Autonomous -->
+  <!-- Cost-effective -->
   <circle cx="220" cy="130" r="60" fill="none" stroke="#FF5898" stroke-width="2" opacity="0.8"/>
   <text x="220" y="125" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">More</text>
-  <text x="220" y="148" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">Autonomous</text>
-  <text x="220" y="210" text-anchor="middle" fill="#888" font-family="system-ui" font-size="12">loop engineering</text>
-  <text x="220" y="228" text-anchor="middle" fill="#555" font-family="system-ui" font-size="11">runs while you sleep</text>
+  <text x="220" y="148" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">Cost-Effective</text>
+  <text x="220" y="210" text-anchor="middle" fill="#888" font-family="system-ui" font-size="12">model agnostic &amp; performant</text>
+  <text x="220" y="228" text-anchor="middle" fill="#555" font-family="system-ui" font-size="11">no tier-1 token burning</text>
 
-  <!-- Cost-effective -->
+  <!-- Autonomous -->
   <circle cx="450" cy="130" r="60" fill="none" stroke="#FF5898" stroke-width="2" opacity="0.8"/>
   <text x="450" y="125" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">More</text>
-  <text x="450" y="148" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">Cost-Effective</text>
-  <text x="450" y="210" text-anchor="middle" fill="#888" font-family="system-ui" font-size="12">model agnostic &amp; performant</text>
-  <text x="450" y="228" text-anchor="middle" fill="#555" font-family="system-ui" font-size="11">no tier-1 token burning</text>
+  <text x="450" y="148" text-anchor="middle" fill="#FF5898" font-family="system-ui" font-size="15" font-weight="700">Autonomous</text>
+  <text x="450" y="210" text-anchor="middle" fill="#888" font-family="system-ui" font-size="12">loop engineering</text>
+  <text x="450" y="228" text-anchor="middle" fill="#555" font-family="system-ui" font-size="11">runs while you sleep</text>
 
   <!-- Taste -->
   <circle cx="680" cy="130" r="60" fill="#FF5898" opacity="0.1" stroke="#FF5898" stroke-width="2.5"/>
