@@ -71,7 +71,7 @@ AdaL ships with a full toolset. You control which tools the agent can see and us
 
 | Flag | What it does |
 |------|-------------|
-| `--allowed-tools` | Auto-approve specific tools (agent still sees all) |
+| `--allowed-tools` | Permission management — auto-approve specific tools (agent still sees all) |
 | `--remove-tools` | Strip built-in tools entirely — invisible + unexecutable |
 
 Tool groups: `Bash`, `Edit`, `Read`, `Search`, `Web`, `Image`, `Video`, `Consult`
