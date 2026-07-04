@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Custom Agents — Class 2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { font-size: clamp(12px, 1.5vw, 22px); }
+  body { font-family: -apple-system, 'Segoe UI', system-ui, sans-serif; background: #0a0a0a; color: #1a1a1a; overflow: hidden; }
+  .deck { position: relative; width: 100vw; height: 100vh; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; align-items: center; padding: clamp(20px, 5vh, 60px) clamp(24px, 6vw, 80px); background: #fff; }
+  .slide.active { display: flex; }
+  .slide.dark { background: #0a0a0a; color: #fff; }
+
+  h1 { font-size: clamp(1.8em, 5vw, 3.2em); font-weight: 800; line-height: 1.15; margin-bottom: 0.4em; letter-spacing: -0.02em; }
+  h3 { font-size: clamp(1em, 2vw, 1.3em); font-weight: 600; margin: 0.6em 0 0.3em; }
+  p { font-size: clamp(0.9em, 1.8vw, 1.2em); line-height: 1.6; max-width: 56em; margin-bottom: 0.5em; }
+  ul { font-size: clamp(0.85em, 1.6vw, 1.1em); line-height: 1.8; max-width: 52em; margin-bottom: 0.5em; padding-left: 1.5em; }
+  li { margin-bottom: 0.3em; }
+
+  .tag { display: inline-block; font-size: clamp(0.65em, 1.3vw, 0.85em); font-weight: 600; color: #FF5898; border: 1px solid #FF5898; border-radius: 99px; padding: 0.3em 0.9em; margin-bottom: 0.6em; text-transform: uppercase; letter-spacing: 0.05em; }
+  .logo-large { height: clamp(48px, 8vh, 90px); margin-bottom: 1.2em; }
+  .accent { color: #FF5898; font-weight: 600; }
+  .muted { color: #888; font-size: 0.85em; }
+  .slide-num { position: absolute; bottom: 1em; right: 1.5em; font-size: clamp(0.7em, 1.2vw, 0.9em); color: #999; }
+  .nav { position: fixed; bottom: clamp(12px, 2vh, 24px); left: 50%; transform: translateX(-50%); display: flex; gap: 0.8em; align-items: center; z-index: 100; }
+  .nav button { background: #FF5898; color: #fff; border: none; border-radius: 8px; padding: 0.5em 1em; font-size: clamp(0.8em, 1.4vw, 1em); cursor: pointer; font-weight: 600; }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  .nav .counter { color: #888; font-size: clamp(0.7em, 1.2vw, 0.9em); min-width: 4em; text-align: center; }
+  .title-slide { text-align: center; }
+  .title-slide h1 { font-size: clamp(2em, 6vw, 3.8em); }
+  .title-slide .subtitle { font-size: clamp(1em, 2.5vw, 1.4em); color: #888; margin-top: 0.3em; }
+  .title-slide .meta { font-size: clamp(0.8em, 1.5vw, 1em); color: #aaa; margin-top: 1.5em; }
+
+  .terminal { background: #0d0d0d; border-radius: 12px; padding: clamp(16px, 3vw, 28px); max-width: 52em; width: 100%; margin: 0.6em 0; font-family: 'SF Mono', 'Fira Code', Menlo, monospace; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+  .terminal .prompt { color: #FF5898; }
+  .terminal .cmd { color: #fff; }
+  .terminal .comment { color: #555; }
+  .terminal .output { color: #888; }
+  .terminal .line { margin-bottom: 0.3em; font-size: clamp(0.75em, 1.4vw, 1em); line-height: 1.6; }
+
+  .two-col { display: flex; gap: clamp(20px, 4vw, 48px); max-width: 60em; width: 100%; margin: 0.5em 0; }
+  .two-col > div { flex: 1; }
+
+  .cards { display: flex; gap: clamp(12px, 2vw, 24px); max-width: 60em; width: 100%; margin: 0.8em 0; }
+  .card { flex: 1; border: 1px solid #eee; border-radius: 12px; padding: clamp(14px, 2vw, 28px); }
+  .dark .card { border-color: #2a2a2a; }
+  .card .icon { font-size: clamp(1.5em, 3vw, 2.2em); margin-bottom: 0.4em; }
+  .card h3 { margin: 0 0 0.3em; font-size: clamp(0.9em, 1.6vw, 1.1em); }
+  .card p { font-size: clamp(0.8em, 1.4vw, 0.95em); color: #666; margin: 0; }
+  .dark .card p { color: #aaa; }
+
+  table { border-collapse: collapse; width: 100%; max-width: 56em; margin: 0.5em 0; font-size: clamp(0.75em, 1.5vw, 1em); }
+  th { text-align: left; padding: 0.6em 0.8em; background: #f5f5f5; border-bottom: 2px solid #FF5898; font-weight: 600; }
+  td { padding: 0.5em 0.8em; border-bottom: 1px solid #eee; }
+  .dark th { background: #1a1a1a; }
+  .dark td { border-color: #2a2a2a; }
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- Slide 0: Title -->
+  <section class="slide title-slide dark active">
+    <img src="assets/adal-logo-horizontal.svg" class="logo-large" alt="AdaL">
+    <h1>Building Custom Agents</h1>
+    <p class="subtitle">From Coding Agent to Agent Platform</p>
+    <p class="meta">AdaL Bootcamp 2 · Class 2<br>by Li Yin</p>
+    <div class="slide-num">1 / 10</div>
+  </section>
+
+  <!-- Slide 1: The Vision -->
+  <section class="slide">
+    <span class="tag">The Vision</span>
+    <h1>Not Just a Coding Agent</h1>
+    <p style="font-size:1.2em;text-align:center;max-width:40em">AdaL is an agent you can <span class="accent">customize and deploy</span>.</p>
+    <div class="cards" style="margin-top:1.5em">
+      <div class="card">
+        <div class="icon">🧠</div>
+        <h3>Custom System Prompt</h3>
+        <p>Your agent's brain — persona, rules, domain context</p>
+      </div>
+      <div class="card">
+        <div class="icon">🤲</div>
+        <h3>Custom Tools</h3>
+        <p>Your agent's hands — Python functions it can call</p>
+      </div>
+      <div class="card">
+        <div class="icon">☁️</div>
+        <h3>Cloud Platform</h3>
+        <p>Your agent's home — create, manage, stream chat</p>
+      </div>
+    </div>
+    <div class="slide-num">2 / 10</div>
+  </section>
+
+  <!-- Slide 2: Three Layers -->
+  <section class="slide dark">
+    <span class="tag">Architecture</span>
+    <h1 style="color:#fff">Three Layers</h1>
+    <table>
+      <tr><th style="background:#1a1a1a;border-color:#FF5898">Layer</th><th style="background:#1a1a1a;border-color:#FF5898">What it is</th><th style="background:#1a1a1a;border-color:#FF5898">Link</th></tr>
+      <tr><td style="border-color:#2a2a2a"><strong style="color:#FF5898">Cloud Platform</strong></td><td style="border-color:#2a2a2a;color:#ccc">Create agents, manage sessions, stream chat over HTTP</td><td style="border-color:#2a2a2a"><a href="https://cloud.adal.sylph.ai/" style="color:#FF5898">cloud.adal.sylph.ai</a></td></tr>
+      <tr><td style="border-color:#2a2a2a"><strong style="color:#FF5898">SDK</strong></td><td style="border-color:#2a2a2a;color:#ccc">Embed AdaL in Python — async, permission callbacks</td><td style="border-color:#2a2a2a"><a href="https://github.com/SylphAI-Inc/adal-sdk" style="color:#FF5898">github.com/SylphAI-Inc/adal-sdk</a></td></tr>
+      <tr><td style="border-color:#2a2a2a"><strong style="color:#FF5898">Prompts + Tools</strong></td><td style="border-color:#2a2a2a;color:#ccc">Define persona and capabilities</td><td style="border-color:#2a2a2a"><a href="https://docs.sylph.ai" style="color:#FF5898">docs.sylph.ai</a></td></tr>
+    </table>
+    <div class="slide-num">3 / 10</div>
+  </section>
+
+  <!-- Slide 3: Authentication -->
+  <section class="slide">
+    <span class="tag">Auth</span>
+    <h1>Authentication</h1>
+    <table>
+      <tr><th>Method</th><th>How it works</th></tr>
+      <tr><td><strong>CLI</strong></td><td>First run opens browser for auth. Cached at <code>~/.adal/adal_oauth_creds.json</code></td></tr>
+      <tr><td><strong>SDK (cached)</strong></td><td>Run <code>adal</code> once → SDK picks up credentials automatically</td></tr>
+      <tr><td><strong>SDK (explicit)</strong></td><td>Pass <code>auth_token</code> (JWT) for headless/CI — extract from creds file</td></tr>
+      <tr><td><strong>Cloud</strong></td><td>Sign in at <a href="https://cloud.adal.sylph.ai/">cloud.adal.sylph.ai</a></td></tr>
+    </table>
+    <div class="terminal" style="margin-top:0.8em">
+      <div class="line"><span class="comment"># Option 1: Cached (recommended)</span></div>
+      <div class="line"><span class="output">options = AdalAgentOptions(workspace=".")</span></div>
+      <div class="line">&nbsp;</div>
+      <div class="line"><span class="comment"># Option 2: Explicit token (headless / CI)</span></div>
+      <div class="line"><span class="prompt">$</span> <span class="cmd">cat ~/.adal/adal_oauth_creds.json | python3 -c "import json,sys; print(json.load(sys.stdin)['access_token'])"</span></div>
+      <div class="line"><span class="output">options = AdalAgentOptions(workspace=".", auth_token="...")</span></div>
+    </div>
+    <div class="slide-num">4 / 10</div>
+  </section>
+
+  <!-- Slide 4: Custom System Prompt -->
+  <section class="slide dark">
+    <span class="tag">Agent's Brain</span>
+    <h1 style="color:#fff">Custom System Prompt</h1>
+    <div class="two-col" style="margin-top:0.5em">
+      <div>
+        <h3 style="color:#FF5898">AGENTS.md (recommended)</h3>
+        <p style="color:#ccc;font-size:0.95em">Auto-loaded every turn from workspace root. Shared team context committed to the repo.</p>
+      </div>
+      <div>
+        <h3 style="color:#FF5898">--prompt-file</h3>
+        <p style="color:#ccc;font-size:0.95em">Replaces default role prompt entirely. Per-script persona overrides.</p>
+      </div>
+    </div>
+    <div class="terminal" style="margin-top:1em">
+      <div class="line"><span class="comment"># Generate with /init</span></div>
+      <div class="line"><span class="prompt">&gt;</span> <span class="cmd">/init</span></div>
+      <div class="line">&nbsp;</div>
+      <div class="line"><span class="comment"># Or use a custom persona</span></div>
+      <div class="line"><span class="prompt">$</span> <span class="cmd">adal --prompt-file prompts/security-auditor.md</span></div>
+    </div>
+    <p class="muted" style="margin-top:0.5em"><a href="https://docs.sylph.ai/features/custom-system-prompt" style="color:#FF5898">→ docs.sylph.ai/features/custom-system-prompt</a></p>
+    <div class="slide-num">5 / 10</div>
+  </section>
+
+  <!-- Slide 5: Custom Tools Part 1 -->
+  <section class="slide">
+    <span class="tag">Agent's Hands · Part 1</span>
+    <h1>Choose From Built-in Tools</h1>
+    <p>AdaL ships with a full toolset. Control which tools the agent sees and uses:</p>
+    <table>
+      <tr><th>Flag</th><th>What it does</th></tr>
+      <tr><td><code>--allowed-tools</code></td><td>Auto-approve specific tools (agent still sees all)</td></tr>
+      <tr><td><code>--enabled-default-tools</code></td><td>Choose which built-in tools the agent can <span class="accent">see and use</span></td></tr>
+    </table>
+    <p style="margin-top:0.5em;font-size:0.95em">Tool groups: <code>Bash</code> · <code>Edit</code> · <code>Read</code> · <code>Search</code> · <code>Web</code> · <code>Image</code> · <code>Video</code> · <code>Consult</code></p>
+    <div class="terminal" style="margin-top:0.5em">
+      <div class="line"><span class="comment"># Agent can read and search — no edits, no bash</span></div>
+      <div class="line"><span class="prompt">$</span> <span class="cmd">adal --enabled-default-tools "Read,Search"</span></div>
+    </div>
+    <p class="muted" style="margin-top:0.5em">Full tool-choice documentation coming soon.</p>
+    <div class="slide-num">6 / 10</div>
+  </section>
+
+  <!-- Slide 6: Custom Tools Part 2 -->
+  <section class="slide dark">
+    <span class="tag">Agent's Hands · Part 2</span>
+    <h1 style="color:#fff">Add Your Own Tools</h1>
+    <p style="color:#ccc">Place <code style="color:#FF5898">tools.py</code> in <code style="color:#FF5898">.adal/</code> — auto-loaded by the runtime.</p>
+    <div class="terminal" style="margin-top:0.5em">
+      <div class="line"><span class="comment"># .adal/tools.py</span></div>
+      <div class="line"><span class="output">from adalflow.core.types import ToolOutput</span></div>
+      <div class="line">&nbsp;</div>
+      <div class="line"><span class="output">def get_catalog(category: str) -> ToolOutput:</span></div>
+      <div class="line"><span class="output">    """Get products in a category."""</span></div>
+      <div class="line"><span class="output">    products = query_db(category)</span></div>
+      <div class="line"><span class="output">    return ToolOutput(output=products,</span></div>
+      <div class="line"><span class="output">        observation=f"Found {len(products)} items",</span></div>
+      <div class="line"><span class="output">        display=f"📦 {len(products)} products",</span></div>
+      <div class="line"><span class="output">        status="success")</span></div>
+      <div class="line">&nbsp;</div>
+      <div class="line"><span class="output">CUSTOM_TOOLS = [get_catalog]</span></div>
+    </div>
+    <p class="muted" style="margin-top:0.5em"><a href="https://docs.sylph.ai/features/custom-tools" style="color:#FF5898">→ docs.sylph.ai/features/custom-tools</a></p>
+    <div class="slide-num">7 / 10</div>
+  </section>
+
+  <!-- Slide 7: Live Demo -->
+  <section class="slide">
+    <span class="tag">Live Demo</span>
+    <h1>Customer Sales Agent</h1>
+    <p>"Lumen Sales Concierge" — a premium audio storefront agent.</p>
+    <table>
+      <tr><th>Tool</th><th>What it does</th></tr>
+      <tr><td><code>get_catalog</code></td><td>Look up products by category</td></tr>
+      <tr><td><code>build_quote</code></td><td>Calculate bundle pricing and discounts</td></tr>
+      <tr><td><code>capture_lead</code></td><td>Save customer details for follow-up</td></tr>
+    </table>
+    <div class="cards" style="margin-top:1em">
+      <div class="card">
+        <div class="icon">🔗</div>
+        <h3>Try it live</h3>
+        <p><a href="https://ruf2xych2b.us-west-2.awsapprunner.com/">ruf2xych2b.us-west-2.awsapprunner.com</a></p>
+      </div>
+      <div class="card">
+        <div class="icon">📂</div>
+        <h3>Codebase</h3>
+        <p><code>adal/customized_agent_platform/examples/customer_sales_agent</code></p>
+      </div>
+    </div>
+    <div class="slide-num">8 / 10</div>
+  </section>
+
+  <!-- Slide 8: AdaL Cloud -->
+  <section class="slide dark">
+    <span class="tag">Cloud Platform</span>
+    <h1 style="color:#fff">AdaL Cloud</h1>
+    <p style="color:#ccc;text-align:center">Create and manage agents from the browser — no infrastructure needed.</p>
+    <div class="two-col" style="margin-top:1em">
+      <div>
+        <h3 style="color:#FF5898">What you can do</h3>
+        <ul style="color:#ccc;font-size:0.9em">
+          <li>Create an agent (name + prompt + tools)</li>
+          <li>Start a session — instant-on</li>
+          <li>Stream chat over HTTP API</li>
+          <li>Download full HTML API docs</li>
+        </ul>
+      </div>
+      <div>
+        <div class="terminal">
+          <div class="line"><span class="comment"># Sign in</span></div>
+          <div class="line"><span class="prompt">$</span> <span class="cmd">open cloud.adal.sylph.ai</span></div>
+          <div class="line">&nbsp;</div>
+          <div class="line"><span class="output">→ Agents</span></div>
+          <div class="line"><span class="output">→ Sessions</span></div>
+          <div class="line"><span class="output">→ API (download docs)</span></div>
+          <div class="line"><span class="output">→ Settings</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="muted" style="margin-top:0.5em"><a href="https://cloud.adal.sylph.ai/" style="color:#FF5898">→ cloud.adal.sylph.ai</a></p>
+    <div class="slide-num">9 / 10</div>
+  </section>
+
+  <!-- Slide 9: SDK + Build Your Own -->
+  <section class="slide">
+    <span class="tag">SDK + Build Your Own</span>
+    <h1>Embed & Deploy</h1>
+    <div class="two-col" style="margin-top:0.3em">
+      <div>
+        <h3 style="color:#FF5898">SDK Quickstart</h3>
+        <div class="terminal">
+          <div class="line"><span class="prompt">$</span> <span class="cmd">pip install git+https://github.com/SylphAI-Inc/adal-sdk.git</span></div>
+        </div>
+        <ul style="font-size:0.85em;margin-top:0.5em">
+          <li>Async Python client</li>
+          <li>Permission callbacks</li>
+          <li>Mid-session model switching</li>
+        </ul>
+        <p class="muted" style="font-size:0.8em"><a href="https://github.com/SylphAI-Inc/adal-sdk" style="color:#FF5898">github.com/SylphAI-Inc/adal-sdk</a></p>
+      </div>
+      <div>
+        <h3 style="color:#FF5898">Build Your Own — The Flow</h3>
+        <ol style="font-size:0.85em;line-height:1.7;padding-left:1.5em">
+          <li>Define persona → <code>AGENTS.md</code></li>
+          <li>Choose tools → <code>--enabled-default-tools</code></li>
+          <li>Add custom tools → <code>.adal/tools.py</code></li>
+          <li>Create agent on Cloud</li>
+          <li>Stream chat via HTTP API</li>
+          <li>Or embed via SDK</li>
+        </ol>
+      </div>
+    </div>
+    <div class="slide-num">10 / 10</div>
+  </section>
+
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <button id="prev" onclick="changeSlide(-1)">← Prev</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button id="next" onclick="changeSlide(1)">Next →</button>
+</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  function show(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, total - 1));
+    slides[current].classList.add('active');
+    document.getElementById('counter').textContent = (current + 1) + ' / ' + total;
+    document.getElementById('prev').disabled = current === 0;
+    document.getElementById('next').disabled = current === total - 1;
+  }
+  function changeSlide(dir) { show(current + dir); }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') changeSlide(1);
+    if (e.key === 'ArrowLeft') changeSlide(-1);
+  });
+  show(0);
+</script>
+</body>
+</html>
