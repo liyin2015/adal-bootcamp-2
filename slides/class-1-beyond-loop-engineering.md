@@ -133,14 +133,14 @@ The next wave of SaaS is vertical agent products. **AdaL is both the builder and
 
 ## Slide 9: The Ecosystem
 
-| Tool | Introduced | You still build |
-|------|------------|-----------------|
-| Claude Code | /loop, /goal, hooks, subagents, SKILL.md | Contracts, roles, disk state |
-| Codex | Automations, worktrees, /goal | Same — you wire it |
-| Cursor | Agent mode, inline edits | Not loop-native |
-| OpenCode | Model-agnostic, extensible | Framework only |
+| Tool | Leads in |
+|------|----------|
+| Cursor | Vibe coding — the IDE that amazed everyone |
+| Claude Code | Context engineering — compaction, sub-agents, hooks |
+| OpenCode | Multiple models — model-agnostic, extensible |
+| **AdaL** | **Loop engineering + brings taste to the agent** |
 
-Every tool ships *primitives*. AdaL ships the **loop**.
+Each tool pioneered a layer. **AdaL leads the loop — and teaches the agent your taste.**
 
 ---
 
