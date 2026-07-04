@@ -108,6 +108,17 @@ def get_catalog(category: str) -> ToolOutput:
 CUSTOM_TOOLS = [get_catalog]
 ```
 
+### Approval control
+
+Use the dict form to override name, description, or approval per tool:
+
+```python
+CUSTOM_TOOLS = [
+    {"function": safe_read_only_tool, "require_approval": False},
+    dangerous_write_tool,  # keeps default require_approval=True
+]
+```
+
 - Tool name = function name, description = docstring
 - Type hints are extracted for the tool schema
 - Async tools supported

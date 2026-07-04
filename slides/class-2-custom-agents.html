@@ -193,6 +193,13 @@
       <div class="line">&nbsp;</div>
       <div class="line"><span class="output">CUSTOM_TOOLS = [get_catalog]</span></div>
     </div>
+    <div class="terminal" style="margin-top:0.5em">
+      <div class="line"><span class="comment"># Dict form — control approval per tool</span></div>
+      <div class="line"><span class="output">CUSTOM_TOOLS = [</span></div>
+      <div class="line"><span class="output">    {"function": safe_read_only_tool, "require_approval": False},</span></div>
+      <div class="line"><span class="output">    dangerous_write_tool,  # keeps default True</span></div>
+      <div class="line"><span class="output">]</span></div>
+    </div>
     <p class="muted" style="margin-top:0.5em"><a href="https://docs.sylph.ai/features/custom-tools" style="color:#FF5898">→ docs.sylph.ai/features/custom-tools</a></p>
     <div class="slide-num">7 / 10</div>
   </section>
