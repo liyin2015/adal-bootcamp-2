@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AdaL — Try the Support Chat</title>
+    <meta name="description" content="AdaL Support Agent demo — a floating chat widget powered by AdaL Cloud." />
+    <meta name="theme-color" content="#FF5898" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FF5898'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='Arial'%3E✦%3C/text%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --pink: #FF5898;
+        --pink-dark: #e84d88;
+        --pink-soft: #fff0f6;
+        --ink: #0a0a0a;
+        --ink-soft: #3a3a4a;
+        --muted: #6b7280;
+        --line: #e7e9ee;
+        --bg: #fafbfc;
+        --panel: #f4f5f7;
+        --radius: 16px;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+        --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
+        --font: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; font-family: var(--font); color: var(--ink);
+        background: var(--bg); min-height: 100vh;
+        display: flex; align-items: center; justify-content: center;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Demo landing page ──────────────────────────────── */
+      .landing {
+        text-align: center; padding: 48px 24px; max-width: 520px;
+      }
+      .landing .logo {
+        display: inline-flex; align-items: center; gap: 10px;
+        font-size: 28px; font-weight: 800; letter-spacing: -0.03em;
+        margin-bottom: 24px;
+      }
+      .landing .logo-mark {
+        width: 38px; height: 38px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--pink), #ff8ec4);
+        display: grid; place-items: center; color: #fff; font-size: 18px;
+        box-shadow: 0 4px 14px rgba(255,88,152,0.4);
+      }
+      .landing h1 {
+        font-size: 32px; font-weight: 800; line-height: 1.2;
+        letter-spacing: -0.02em; margin: 0 0 12px;
+      }
+      .landing h1 .grad {
+        background: linear-gradient(120deg, var(--pink), #ff8ec4);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      .landing p {
+        color: var(--muted); font-size: 17px; line-height: 1.6; margin: 0 0 28px;
+      }
+      .landing .hint {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: var(--pink-soft); color: var(--pink-dark);
+        font-size: 14px; font-weight: 600; padding: 8px 16px;
+        border-radius: 999px;
+      }
+      .landing .hint .arrow { font-size: 18px; animation: bounce 1.5s infinite; }
+      @keyframes bounce {
+        0%,100% { transform: translateY(0); }
+        50% { transform: translateY(4px); }
+      }
+
+      /* ══ Floating chat widget ═══════════════════════════════ */
+      .chat-fab {
+        position: fixed; bottom: 24px; right: 24px; z-index: 60;
+        width: 62px; height: 62px; border-radius: 50%; border: 0; cursor: pointer;
+        background: linear-gradient(135deg, var(--pink), #ff8ec4); color: #fff;
+        display: grid; place-items: center;
+        box-shadow: 0 10px 30px rgba(255,88,152,0.5);
+        transition: transform .18s ease, box-shadow .18s ease;
+      }
+      .chat-fab:hover { transform: scale(1.06); box-shadow: 0 14px 38px rgba(255,88,152,0.6); }
+      .chat-fab svg { width: 27px; height: 27px; }
+      .chat-fab .close-ic { display: none; }
+      .chat-fab.open .open-ic { display: none; }
+      .chat-fab.open .close-ic { display: block; }
+      .chat-fab .pulse { position: absolute; inset: 0; border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(255,88,152,0.5); animation: pulse 2.4s infinite; }
+      .chat-fab.open .pulse { animation: none; }
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255,88,152,0.45); }
+        70% { box-shadow: 0 0 0 18px rgba(255,88,152,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,88,152,0); }
+      }
+
+      .chat-panel {
+        position: fixed; bottom: 100px; right: 24px; z-index: 60;
+        width: 384px; max-width: calc(100vw - 32px); height: 560px; max-height: calc(100vh - 130px);
+        background: #fff; border: 1px solid var(--line); border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        display: none; flex-direction: column; overflow: hidden;
+        transform: translateY(12px) scale(.98); opacity: 0; transform-origin: bottom right;
+        transition: transform .18s ease, opacity .18s ease;
+      }
+      .chat-panel.open { display: flex; transform: translateY(0) scale(1); opacity: 1; }
+      @media (max-width: 480px) {
+        .chat-panel { right: 8px; left: 8px; width: auto; bottom: 92px; height: calc(100vh - 110px); }
+      }
+
+      .chat-head {
+        background: linear-gradient(120deg, var(--ink), #2a2a3a); color: #fff;
+        padding: 16px 18px; display: flex; align-items: center; gap: 12px;
+      }
+      .chat-head .av {
+        width: 40px; height: 40px; border-radius: 12px;
+        background: linear-gradient(135deg, var(--pink), #ff8ec4);
+        display: grid; place-items: center; font-size: 18px;
+      }
+      .chat-head .who { flex: 1; }
+      .chat-head .who b { font-size: 15px; display: block; }
+      .chat-head .who span { font-size: 12px; color: #a0a0b0; display: flex; align-items: center; gap: 6px; }
+      .chat-head .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,0.25); }
+      .chat-head .x { background: transparent; border: 0; color: #a0a0b0; cursor: pointer; font-size: 20px; line-height: 1; padding: 4px; }
+      .chat-head .x:hover { color: #fff; }
+
+      .chat-body {
+        flex: 1; min-height: 0; overflow-y: auto; padding: 16px;
+        background: var(--panel); display: flex; flex-direction: column; gap: 10px;
+      }
+      .chat-body > * { flex-shrink: 0; }
+
+      .msg {
+        max-width: 84%; padding: 10px 13px; border-radius: 14px;
+        font-size: 14px; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+      }
+      .msg.bot { align-self: flex-start; background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 5px; }
+      .msg.user { align-self: flex-end; background: var(--pink); color: #fff; border-bottom-right-radius: 5px; }
+      .msg.bot ul { margin: 6px 0; padding-left: 18px; }
+      .msg.bot li { margin: 2px 0; }
+      .msg.bot strong { font-weight: 700; color: var(--ink); }
+      .msg.bot a { color: var(--pink); text-decoration: underline; text-underline-offset: 2px; }
+
+      .tool-note {
+        align-self: flex-start; display: flex; align-items: center; gap: 7px;
+        max-width: 92%; padding: 4px 2px; font-size: 12.5px; color: var(--muted);
+      }
+      .tool-note .tc-ico { flex: none; font-size: 14px; }
+      .tool-note b { font-weight: 600; color: var(--ink); }
+
+      .typing {
+        align-self: flex-start; display: flex; gap: 4px; padding: 12px 14px;
+        background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      }
+      .typing i { width: 7px; height: 7px; border-radius: 50%; background: #c3c7d0; animation: blink 1.3s infinite both; }
+      .typing i:nth-child(2) { animation-delay: .2s; }
+      .typing i:nth-child(3) { animation-delay: .4s; }
+      @keyframes blink { 0%,60%,100% { opacity:.3; } 30% { opacity:1; } }
+
+      .chat-foot { border-top: 1px solid var(--line); padding: 12px; background: #fff; }
+      .chat-input { display: flex; gap: 8px; align-items: flex-end; }
+      .chat-input textarea {
+        flex: 1; resize: none; border: 1px solid var(--line); border-radius: 12px;
+        padding: 10px 12px; font: inherit; font-size: 14px; max-height: 96px; outline: none;
+      }
+      .chat-input textarea:focus { border-color: var(--pink); }
+      .chat-input button {
+        border: 0; border-radius: 12px; background: var(--pink); color: #fff;
+        width: 42px; height: 42px; cursor: pointer; display: grid; place-items: center;
+      }
+      .chat-input button:hover:not(:disabled) { background: var(--pink-dark); }
+      .chat-input button:disabled { opacity: .5; cursor: not-allowed; }
+
+      .chat-suggest { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+      .chip {
+        border: 1px solid var(--line); background: #fff; border-radius: 999px;
+        padding: 6px 12px; font-size: 12.5px; cursor: pointer; color: var(--ink-soft);
+      }
+      .chip:hover { border-color: var(--pink); color: var(--pink); }
+
+      .chat-note { text-align: center; font-size: 11px; color: #9aa0ab; margin-top: 8px; }
+      .chat-note a { color: var(--pink); font-weight: 600; text-decoration: none; }
+      .chat-note a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <!-- ── Demo background page ────────────────────────────── -->
+    <div class="landing">
+      <div class="logo"><span class="logo-mark">✦</span> AdaL</div>
+      <h1>Need help with <span class="grad">AdaL</span>?</h1>
+      <p>Try the support chat — ask about installation, CLI commands, SDK usage, cloud agents, custom tools, or anything AdaL.</p>
+      <span class="hint"><span class="arrow">↓</span> Click the pink bubble to start</span>
+    </div>
+
+    <!-- ══ Floating chat widget ═══════════════════════════════ -->
+    <button class="chat-fab" id="chatFab" aria-label="Open chat" onclick="SupportChat.toggle()">
+      <span class="pulse"></span>
+      <svg class="open-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <svg class="close-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <section class="chat-panel" id="chatPanel" aria-live="polite">
+      <div class="chat-head">
+        <div class="av">✦</div>
+        <div class="who"><b>AdaL Support</b><span><i class="dot"></i> Online</span></div>
+        <button class="x" aria-label="Close chat" onclick="SupportChat.close()">✕</button>
+      </div>
+      <div class="chat-body" id="chatBody"></div>
+      <div class="chat-foot">
+        <div class="chat-suggest" id="chatSuggest"></div>
+        <div class="chat-input">
+          <textarea id="chatText" rows="1" placeholder="Ask about AdaL…"></textarea>
+          <button id="chatSend" aria-label="Send" onclick="SupportChat.send()">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+          </button>
+        </div>
+        <div class="chat-note">Powered by <a href="https://cloud.adal.sylph.ai" target="_blank" rel="noopener">AdaL Cloud</a></div>
+      </div>
+    </section>
+
+    <script>
+      // ── AdaL Support Chat Widget ───────────────────────────
+      const SupportChat = (function () {
+        const panel = document.getElementById("chatPanel");
+        const fab = document.getElementById("chatFab");
+        const body = document.getElementById("chatBody");
+        const textEl = document.getElementById("chatText");
+        const sendBtn = document.getElementById("chatSend");
+        const suggestEl = document.getElementById("chatSuggest");
+
+        let sessionId = sessionStorage.getItem("adal.support.sessionId") || "";
+        let started = false;
+        let sending = false;
+        const SUGGESTIONS = [
+          "How do I install AdaL?",
+          "How do I create a custom tool?",
+          "What models does AdaL support?",
+        ];
+
+        function scroll() { body.scrollTop = body.scrollHeight; }
+
+        function addMsg(role, text) {
+          const el = document.createElement("div");
+          el.className = `msg ${role}`;
+          if (role === "bot") {
+            el.innerHTML = mdToHtml(text);
+          } else {
+            el.textContent = text;
+          }
+          body.appendChild(el); scroll();
+          return el;
+        }
+
+        function mdToHtml(raw) {
+          let s = escapeHtml(String(raw).trim());
+          // Links: [text](url)
+          s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+          // Bare URLs
+          s = s.replace(/(^|[^"=])(https?:\/\/[^\s<]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>');
+          // Bold
+          s = s.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+          // Inline code
+          s = s.replace(/`([^`]+)`/g, '<code style="background:#f0f0f4;padding:1px 5px;border-radius:4px;font-size:13px;">$1</code>');
+          // Bullets
+          s = s.replace(/(^|\n)\s*[-*]\s+(.+)/g, "$1<li>$2</li>");
+          s = s.replace(/(<li>[\s\S]*?<\/li>)/g, (m) => `<ul>${m}</ul>`);
+          s = s.replace(/<\/ul>\s*<ul>/g, "");
+          // Line breaks
+          s = s.replace(/\n/g, "<br />");
+          return s;
+        }
+
+        function escapeHtml(s) {
+          return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        function addTyping() {
+          const el = document.createElement("div");
+          el.className = "typing";
+          el.innerHTML = "<i></i><i></i><i></i>";
+          body.appendChild(el); scroll();
+          return el;
+        }
+
+        function renderSuggestions() {
+          suggestEl.innerHTML = "";
+          for (const s of SUGGESTIONS) {
+            const chip = document.createElement("button");
+            chip.className = "chip";
+            chip.textContent = s;
+            chip.addEventListener("click", () => { textEl.value = s; send(); });
+            suggestEl.appendChild(chip);
+          }
+        }
+
+        async function ensureSession() {
+          if (sessionId) return sessionId;
+          const res = await fetch("/api/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+          if (!res.ok) throw new Error(`session create failed (${res.status})`);
+          const data = await res.json();
+          sessionId = data.session_id;
+          sessionStorage.setItem("adal.support.sessionId", sessionId);
+          return sessionId;
+        }
+
+        function resetSession(reason) {
+          console.warn("[support] resetting session:", reason);
+          sessionId = "";
+          try { sessionStorage.removeItem("adal.support.sessionId"); } catch (e) {}
+        }
+
+        function greet() {
+          if (started) return;
+          started = true;
+          addMsg("bot", "Hi! I'm the AdaL support agent 👋\n\nI can help with installation, CLI usage, SDK questions, cloud agents, custom tools, and more. What can I help you with?");
+          renderSuggestions();
+        }
+
+        async function send() {
+          const text = textEl.value.trim();
+          if (!text || sending) return;
+          sending = true; updateSend();
+          textEl.value = ""; textEl.style.height = "auto";
+          suggestEl.innerHTML = "";
+          addMsg("user", text);
+          const typing = addTyping();
+
+          let removedTyping = false;
+          const clearTyping = () => { if (!removedTyping) { typing.remove(); removedTyping = true; } };
+          const ctx = { clearTyping, typingEl: typing, rendered: false };
+
+          try {
+            let outcome = await streamTurn(text, ctx);
+            if (outcome === "session-not-found") {
+              resetSession("backend reported session not found");
+              ctx.rendered = false;
+              outcome = await streamTurn(text, ctx);
+            }
+            clearTyping();
+            if (outcome === "session-not-found") {
+              const e = addMsg("bot", "Sorry — I lost our conversation. Please try again.");
+              e.style.color = "#b23b3b";
+            } else if (!ctx.rendered) {
+              const e = addMsg("bot", "Sorry — I didn't catch that. Could you try again?");
+              e.style.color = "#b23b3b";
+            }
+          } catch (err) {
+            console.error("[support] send failed:", err);
+            clearTyping();
+            const e = addMsg("bot", "Sorry — I had trouble connecting. Please try again in a moment.");
+            e.style.color = "#b23b3b";
+          } finally {
+            sending = false; updateSend(); textEl.focus();
+          }
+        }
+
+        async function streamTurn(text, ctx) {
+          const sid = await ensureSession();
+          const res = await fetch(`/api/chat/${sid}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text }),
+          });
+          if (res.status === 404) return "session-not-found";
+          if (!res.ok || !res.body) throw new Error(`chat failed (${res.status})`);
+
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buf = "";
+          let notFound = false;
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            const chunks = buf.split("\n\n");
+            buf = chunks.pop() || "";
+            for (const chunk of chunks) {
+              const line = chunk.split("\n").find((l) => l.startsWith("data: "));
+              if (!line) continue;
+              let ev; try { ev = JSON.parse(line.slice(6)); } catch { continue; }
+              if (ev && ev.error && /session not found/i.test(String(ev.error))) {
+                notFound = true; continue;
+              }
+              handleEvent(ev, ctx);
+            }
+          }
+          return (notFound && !ctx.rendered) ? "session-not-found" : "ok";
+        }
+
+        const TOOL_ICON = { web_search: "🔍", fetch_url: "📄", read_file: "📖" };
+
+        function handleEvent(ev, ctx) {
+          const type = ev.type || "";
+          if (type === "assistant.message.completed" && ev.message && typeof ev.message.content === "string") {
+            ctx.clearTyping();
+            const c = ev.message.content.trim();
+            if (c) { addMsg("bot", c); ctx.rendered = true; }
+            return;
+          }
+          if (type === "tool.started") {
+            const key = String(ev.name || "").toLowerCase();
+            const icon = TOOL_ICON[key] || "🔧";
+            const note = document.createElement("div");
+            note.className = "tool-note";
+            note.innerHTML = `<span class="tc-ico">${icon}</span><span>Searching: <b>${escapeHtml(ev.name || "tool")}</b></span>`;
+            if (ctx.typingEl && ctx.typingEl.parentNode === body) {
+              body.insertBefore(note, ctx.typingEl);
+            } else {
+              body.appendChild(note);
+            }
+            scroll();
+            ctx.rendered = true;
+            return;
+          }
+          if (type === "command.failed") {
+            ctx.clearTyping();
+            const m = (ev.error && ev.error.message) || "Something went wrong.";
+            const e = addMsg("bot", m); e.style.color = "#b23b3b";
+            ctx.rendered = true;
+          }
+        }
+
+        function updateSend() {
+          sendBtn.disabled = sending || !textEl.value.trim();
+        }
+
+        textEl.addEventListener("input", () => {
+          textEl.style.height = "auto";
+          textEl.style.height = Math.min(textEl.scrollHeight, 96) + "px";
+          updateSend();
+        });
+        textEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+        });
+
+        function open(prefill) {
+          panel.classList.add("open");
+          fab.classList.add("open");
+          fab.setAttribute("aria-label", "Close chat");
+          greet();
+          if (prefill) { textEl.value = prefill; updateSend(); }
+          setTimeout(() => textEl.focus(), 200);
+        }
+        function close() {
+          panel.classList.remove("open");
+          fab.classList.remove("open");
+          fab.setAttribute("aria-label", "Open chat");
+        }
+        function toggle() { panel.classList.contains("open") ? close() : open(); }
+
+        updateSend();
+        // Pre-warm session in background.
+        ensureSession().catch(() => {});
+
+        return { open, close, toggle, send };
+      })();
+    </script>
+  </body>
+</html>
