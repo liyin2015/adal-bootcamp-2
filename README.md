@@ -66,9 +66,10 @@ docs/
 └── clone-web/                             # clone reference docs
 ```
 
-## Author
+## Authors
 
 **Li Yin** — [github.com/liyin2015](https://github.com/liyin2015)
+**Zach Wilson** — [github.com/eczachly](https://github.com/eczachly)
 
 ## License
 
