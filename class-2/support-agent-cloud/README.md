@@ -65,5 +65,5 @@ ADAL_JWT="eyJ..." ./deploy_aws.sh
 ## Agent Configuration
 
 The agent is configured with:
-- **`remove_tools`**: Strips Bash, Edit, Search, Image, Video, Consult — leaving only Web (web_search + fetch_url) and Read (read_file).
+- **`enabled_default_tools`**: Only `["Web", "Read"]` are enabled — the agent can ONLY use web_search, fetch_url, and read_file. All other tools (Bash, Edit, Search, Image, Video, Consult) are invisible.
 - **`system_prompt`**: Instructs the agent to search docs.sylph.ai for answers, cite sources, and refuse off-topic questions.
